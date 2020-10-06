@@ -1,0 +1,108 @@
+import java.lang.Math.abs
+import kotlin.system.exitProcess
+
+var Tamano=5;
+var loc=5;
+val S = arrayOf<String>("d","e","a","b","c")
+val C = Array(Tamano) { i -> S[i] }
+val Respaldo = Array(Tamano) { i -> S[i] }
+val solucion = arrayOf<String>("a","b","c","d","e")
+var aux=0
+var TamanoSol = 0
+var TamanoMejorSol=0
+val MejorSolucion = IntArray(999)
+val SolucionActual = IntArray(999)
+var MaxProf = 10
+var bloqueado = 0
+
+fun voltear(mover:Int) {
+    for (i in mover downTo 0) {
+        S[aux] = C[i]
+        aux++
+    }
+    bloqueado = mover
+    for (i in 0 .. Tamano-1) {
+        C[i] = S[i]
+    }
+    aux = 0
+}
+fun verificar(): Boolean {
+    return S contentEquals solucion
+} //VALIDA SI LA CADENA MOVIDA, ES IGUAL A LA SOLUCION
+
+/*fun mostrarresultados(){
+    S.forEach { print(" $it ")}
+    println()
+    println(TamanoSol)
+    SolucionActual.forEach { if (it!=0)print("$it ") }
+    println()
+    exitProcess(1)
+}*/
+var verificacion =1
+
+fun busqueda_amplitud() {
+    if (verificar()) {
+        for (i in 0..TamanoSol) {
+            MejorSolucion[i] = SolucionActual[i]
+            TamanoMejorSol = TamanoSol
+        }
+    } else {
+        if (verificacion > 5) {
+            verificacion = 1
+        }
+        S.forEach { print(it) }
+        println()
+                voltear(verificacion)
+
+                verificacion++
+                SolucionActual[TamanoSol] = verificacion
+                TamanoSol++
+                busqueda_amplitud()
+        }
+
+}
+
+fun busqueda_profundidad(){
+    if (verificar()) {
+        for (i in 0..TamanoSol) {
+            MejorSolucion[i] = SolucionActual[i]
+            TamanoMejorSol = TamanoSol
+        }
+    } else {
+        verificacion = (1..4).random()
+
+        if (verificacion != bloqueado) {
+            bloqueado = verificacion
+            voltear(verificacion)
+            SolucionActual[TamanoSol] = verificacion
+            TamanoSol++
+            S.forEach { print(it) }
+            println()
+            if(TamanoSol > MaxProf){
+                TamanoSol=0
+                for (i in 0..4) {
+                    S[i]=Respaldo[i]
+                    C[i] = Respaldo[i]
+                }
+            }
+        }
+        busqueda_profundidad()
+    }
+}
+
+
+fun main(args: Array<String>) {
+
+    print("original ")
+    S.forEach { print(it) }
+    println()
+    //Método utilizado
+    busqueda_profundidad()
+    //Método utilizado
+    println()
+    S.forEach { print(it) }
+    println()
+    println("pasos  $TamanoMejorSol")
+    println()
+    MejorSolucion.forEach { if (it != 0) { print(it) } }
+}
